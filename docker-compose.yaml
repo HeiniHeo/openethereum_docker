@@ -1,0 +1,207 @@
+version: "3.4"
+
+services:
+
+  pos1_1:
+    image: "nara7875/openethereum:pos1"
+    tty: true
+    ports:
+      - 8647:8647
+      - 30315:30315
+      - 10646:10646
+    environment:
+      ENV: ETHERNODE1
+      RPCPORT: 8647
+      PORT: 30315
+      RUST_BACKTRACE: 1
+    volumes:
+      - ./config1.toml:/openethereum/config.toml
+      - ./genesis1.json:/openethereum/genesis.json
+      - ./password:/openethereum/password
+      - ./nodes:/openethereum/nodes
+      - ./keys1:/openethereum/keys
+    container_name: pos1_1
+    command: >
+      sh -c "cd ~/
+            /openethereum/target/release/openethereum --config /openethereum/config.toml"
+    working_dir: /openethereum
+
+
+  pos2_1:
+    image: "nara7875/openethereum:pos2"
+    tty: true
+    ports:
+      - 8648:8648
+      - 30316:30316
+      - 10647:10647
+    environment:
+      ENV: ETHERNODE1
+      RPCPORT: 8648
+      PORT: 30316
+      RUST_BACKTRACE: 1
+    volumes:
+      - ./config2.toml:/openethereum/config.toml
+      - ./genesis2.json:/openethereum/genesis.json
+      - ./password:/openethereum/password
+      - ./nodes:/openethereum/nodes
+      - ./keys2:/openethereum/keys
+    container_name: pos2_1
+    command: >
+      sh -c "cd ~/
+            /openethereum/target/release/openethereum --config /openethereum/config.toml"
+    working_dir: /openethereum
+
+  pos3_1:
+    image: "nara7875/openethereum:pos3"
+    tty: true
+    ports:
+      - 8649:8649
+      - 30317:30317
+      - 10648:10648
+    environment:
+      ENV: ETHERNODE1
+      RPCPORT: 8649
+      PORT: 30317
+      RUST_BACKTRACE: 1
+    volumes:
+      - ./config3.toml:/openethereum/config.toml
+      - ./genesis3.json:/openethereum/genesis.json
+      - ./password:/openethereum/password
+      - ./keys3:/openethereum/keys
+      - ./nodes:/openethereum/nodes
+    container_name: pos3_1
+    command: >
+      sh -c "cd ~/
+            /openethereum/target/release/openethereum --config /openethereum/config.toml"
+    working_dir: /openethereum
+
+  pos4_1:
+    image: "nara7875/openethereum:pos4"
+    tty: true
+    ports:
+      - 8650:8650
+      - 30318:30318
+      - 10649:10649
+    environment:
+      ENV: ETHERNODE1
+      RPCPORT: 8650
+      PORT: 30318
+      RUST_BACKTRACE: 1
+    volumes:
+      - ./config4.toml:/openethereum/config.toml
+      - ./genesis4.json:/openethereum/genesis.json
+      - ./password:/openethereum/password
+      - ./nodes:/openethereum/nodes
+      - ./keys4:/openethereum/keys
+    container_name: pos4_1
+    command: >
+      sh -c "cd ~/
+            /openethereum/target/release/openethereum --config /openethereum/config.toml"
+    working_dir: /openethereum
+  # poscli:
+  #   image: "nara7875/openethereum:0"
+  #   tty: true
+  #   container_name: pos-cli_1
+  #   working_dir: /openethereum
+  #   command: /bin/bash
+ 
+  #   links:
+  #     - pos1_1:pos1_1
+  #     - pos2_1:pos2_1
+  #     - pos3_1:pos3_1
+  #     - pos4_1:pos4_1
+    
+  #   depends_on:
+  #     - pos1_1
+  #     - pos2_1
+  #     - pos3_1
+  #     - pos4_1
+
+  entry1_2:
+    image: "nara7875/etcexplorer:5"
+    ports:
+      - 3011:3000
+    restart: always
+    depends_on:
+      - db_1
+    links:
+      - pos1_1:pos1_1
+    volumes:
+      - ./config1.json:/config.json
+      - ./ACT1.png:/public/img/explorer-logo.png
+      - ./explorer1/favicon.ico:/public/favicon.ico
+    environment:
+      MONGO_URI: mongodb://host.docker.internal/ACT1
+    command : bash -c "/wait-for-it.sh -h mongo -p 27017 -t 20 -- npm run start"
+  
+  entry2_2:
+    image: "nara7875/etcexplorer:5"
+    ports:
+      - 3012:3000
+    restart: always
+    depends_on:
+      - db_1
+    links:
+      - pos2_1:pos2_1
+    volumes:
+      - ./config2.json:/config.json
+      - ./GGOM.png:/public/img/explorer-logo.png
+      - ./explorer1/favicon.ico:/public/favicon.ico
+    environment:
+      MONGO_URI: mongodb://host.docker.internal/GGOM1
+    command : bash -c "/wait-for-it.sh -h mongo -p 27017 -t 20 -- npm run start"
+  
+  entry3_2:
+    image: "nara7875/etcexplorer:5"
+    ports:
+      - 3013:3000
+    restart: always
+    depends_on:
+      - db_1
+    links:
+      - pos3_1:pos3_1
+    volumes:
+      - ./config3.json:/config.json
+      - ./ONE.png:/public/img/explorer-logo.png
+      - ./explorer1/favicon.ico:/public/favicon.ico
+    environment:
+      MONGO_URI: mongodb://host.docker.internal/ONE1
+    command : bash -c "/wait-for-it.sh -h mongo -p 27017 -t 20 -- npm run start"
+  
+  entry4_2:
+    image: "nara7875/etcexplorer:5"
+    ports:
+      - 3014:3000
+    restart: always
+    depends_on:
+      - db_1
+    links:
+      - pos4_1:pos4_1
+    volumes:
+      - ./config4.json:/config.json
+      - ./HEINI1.png:/public/img/explorer-logo.png
+      - ./explorer1/favicon.ico:/public/favicon.ico
+      # - ./db.js:/db.js
+    environment:
+      MONGO_URI: mongodb://host.docker.internal/HEINI1
+      # MONGO_URI: mongodb+srv://coin123:acentcoin123@heini.w6fbk.mongodb.net/HEINI?retryWrites=true&w=majority
+    command : bash -c "/wait-for-it.sh -h mongo -p 27017 -t 20 -- npm run start"
+  
+  db_1:
+    image: "mongo"
+    depends_on:
+      - pos1_1
+      - pos2_1
+      - pos3_1
+      - pos4_1
+    ports: 
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: "[ACT1, GGOM1, HEINI1, ONE1]"
+    
+
+
+
+  
